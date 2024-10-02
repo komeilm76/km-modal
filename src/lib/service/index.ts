@@ -1,6 +1,6 @@
 import { ref } from 'km-fresh';
 
-const make = <SCHEMA>(_data: SCHEMA) => {
+const make = <SCHEMA extends unknown>(_data: SCHEMA) => {
   let state = ref(false);
   let data = ref(_data);
   const close = () => {

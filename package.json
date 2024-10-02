@@ -1,7 +1,7 @@
 {
   "name": "km-modal",
   "version": "0.0.3",
-  "description": "stable configure for npm package ( server and client )",
+  "description": "package for control states of modals (dialogs)",
   "main": "build/main/index.js",
   "typings": "build/main/index.d.ts",
   "module": "build/module/index.js",
@@ -17,9 +17,8 @@
     "fix": "run-s fix:*",
     "fix:prettier": "prettier \"src/**/*.ts\" --write",
     "watch:build": "tsc -p tsconfig.json -w",
-    "version": "standard-version",
     "reset-hard": "git clean -dfx && git reset --hard && npm i",
-    "prepare-release": "run-s reset-hard version",
+    "prepare-release": "run-s reset-hard",
     "dev": "npm run dev:nodemon",
     "dev:nodemon": "cross-env NODE_ENV=development nodemon",
     "dev:ts-node-dev": "cross-env NODE_ENV=development ts-node-dev --respawn --transpile-only ./src/index.ts",
@@ -29,19 +28,13 @@
     "node": ">=10"
   },
   "dependencies": {
-    "@bitauth/libauth": "^1.17.1",
     "@types/node": "^22.5.5",
     "cross-env": "^7.0.3",
     "km-fresh": "^0.2.6"
   },
   "devDependencies": {
-    "@istanbuljs/nyc-config-typescript": "^1.0.1",
-    "cspell": "^4.1.0",
-    "cz-conventional-changelog": "^3.3.0",
-    "gh-pages": "^6.1.1",
     "nodemon": "3.1.6",
     "npm-run-all": "^4.1.5",
-    "nyc": "^15.1.0",
     "open-cli": "^8.0.0",
     "prettier": "^2.1.1",
     "release-it": "^17.6.0",
@@ -59,18 +52,5 @@
     "LICENSE",
     "README.md"
   ],
-  "config": {
-    "commitizen": {
-      "path": "cz-conventional-changelog"
-    }
-  },
-  "prettier": {
-    "singleQuote": true
-  },
-  "nyc": {
-    "extends": "@istanbuljs/nyc-config-typescript",
-    "exclude": [
-      "**/*.spec.js"
-    ]
-  }
+  "config": {}
 }

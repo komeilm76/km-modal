@@ -1,59 +1,82 @@
+import { ref, UnwrapRef } from 'vue';
+import { ref as kmRef } from 'km-fresh';
 type IShape<DATA extends any> = { state: boolean; data: DATA | undefined };
-type Ref<SHAPE extends IShape<DATA>, DATA extends any = any> = <T1 extends SHAPE>(
-  initialValue: T1
-) => {
-  value: T1;
-};
 
-const install = <
-  DATA extends any,
-  SHAPE extends IShape<DATA>,
-  ADAPTER extends Ref<SHAPE>,
-  REF extends ReturnType<ADAPTER>
->(
-  adapter: ADAPTER
-) => {
-  const _open = <R extends REF>(ref: R, newData?: R['value']['data']) => {
-    if (newData) {
-      ref.value.data = newData;
-      ref.value.state = true;
-    } else {
-      ref.value.state = true;
+const makeVueModal = <DATA extends any>(entryData: DATA) => {
+  const defaultConfig: IShape<DATA> = { state: false, data: entryData };
+  const modal = ref<IShape<DATA>>({ ...defaultConfig });
+  const open = (entryData?: DATA) => {
+    if (entryData) {
+      modal.value.data = entryData as UnwrapRef<DATA>;
     }
+    modal.value.state = true;
   };
-  const _close = <R extends REF>(ref: R, clearData: boolean = false) => {
+  const close = (clearData: boolean = false) => {
     if (clearData == true) {
-      ref.value.data = undefined;
-    } else {
-      ref.value.state = false;
+      modal.value.data = undefined;
     }
+    modal.value.state = false;
   };
-  const make = <D extends any>(entryData?: D) => {
-    // @ts-ignore
-    const modal = adapter<IShape<D>>({ state: false, data: entryData });
-
-    return {
-      open: (entryDAta?: D) => {
-        // @ts-ignore
-        _open(modal, entryDAta);
-      },
-      close(clearDAta?: boolean) {
-        // @ts-ignore
-        _close(modal, clearDAta);
-      },
-      modal,
-    };
+  const reset = () => {
+    modal.value = defaultConfig;
   };
-
   return {
-    open: _open,
-    close: _close,
-    make,
+    open,
+    close,
+    modal,
+    reset,
+  };
+};
+const makeFreshModal = <DATA extends any>(entryData: DATA) => {
+  const defaultConfig: IShape<DATA> = { state: false, data: entryData };
+  const modal = kmRef<IShape<DATA>>({ ...defaultConfig });
+  const open = (entryData?: DATA) => {
+    if (entryData) {
+      modal.setHard({ ...modal.get(), data: entryData });
+    }
+    modal.value.state = true;
+  };
+  const close = (clearData: boolean = false) => {
+    if (clearData == true) {
+      modal.value.data = undefined;
+      modal.setHard({ ...modal.get(), data: undefined });
+    }
+    modal.value.state = false;
+  };
+  const reset = () => {
+    modal.setHard(defaultConfig);
+  };
+  return {
+    open,
+    close,
+    modal,
+    reset,
   };
 };
 
-export const defineKmModalService = install;
+const open = <MODAL extends ReturnType<typeof makeFreshModal> | ReturnType<typeof makeVueModal>>(
+  modal: MODAL,
+  entryData?: MODAL['modal']['value']['data']
+) => {
+  modal.open(entryData);
+};
+
+const close = <MODAL extends ReturnType<typeof makeFreshModal> | ReturnType<typeof makeVueModal>>(
+  modal: MODAL,
+  clearData: boolean = false
+) => {
+  modal.close(clearData);
+};
+
+export const makeModal = <DATA extends any>(entryData?: DATA) => {
+  return {
+    vue: () => makeVueModal(entryData),
+    fresh: () => makeFreshModal(entryData),
+  };
+};
 
 export default {
-  install,
+  make: makeModal,
+  open,
+  close,
 };

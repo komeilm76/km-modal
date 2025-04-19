@@ -21,6 +21,7 @@ const makeVueModal = <DATA extends any>(entryData: DATA) => {
     modal.value = defaultConfig;
   };
   return {
+    type: 'vue',
     open,
     close,
     modal,
@@ -47,6 +48,7 @@ const makeFreshModal = <DATA extends any>(entryData: DATA) => {
     modal.setHard(defaultConfig);
   };
   return {
+    type: 'fresh',
     open,
     close,
     modal,
@@ -54,17 +56,17 @@ const makeFreshModal = <DATA extends any>(entryData: DATA) => {
   };
 };
 
-const open = <MODAL extends ReturnType<typeof makeFreshModal> | ReturnType<typeof makeVueModal>>(
+const open = <MODAL extends unknown>(
   modal: MODAL,
+  // @ts-ignore
   entryData?: MODAL['modal']['value']['data']
 ) => {
+  // @ts-ignore
   modal.open(entryData);
 };
 
-const close = <MODAL extends ReturnType<typeof makeFreshModal> | ReturnType<typeof makeVueModal>>(
-  modal: MODAL,
-  clearData: boolean = false
-) => {
+const close = <MODAL extends unknown>(modal: MODAL, clearData: boolean = false) => {
+  // @ts-ignore
   modal.close(clearData);
 };
 
